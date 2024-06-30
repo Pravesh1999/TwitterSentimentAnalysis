@@ -13,6 +13,7 @@ from src.models.cnn import CNNModel
 from src.models.lstm import LSTMTextClassifier
 from src.models.lstm_multihead import LSTMMultiHeadAttention
 from src.models.mlp import MLPClassifier
+from src.Predict import predict
 
 def load_data(json_path):
     """
@@ -49,6 +50,7 @@ def main():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--train-model', action='store_true', help='Train model')
     group.add_argument('--infer-model', action='store_true', help='Infer model')
+    group.add_argument('--predict', action='store_true', help='Make Predictions')
     args = parser.parse_args()
 
     if args.load_and_clean:
@@ -81,6 +83,16 @@ def main():
             make_inference(model, args.model_name, loss_fn, f'{PREPROCESSED_DATA_PATH}/split_data.json')
         except FileNotFoundError:
             raise Exception("Model file not found. Ensure the model has been trained and saved.")
+        
+    elif args.predict:
+        input_text = input('Enter the tweet for sentiment analysis: ')
+        model_name = input('Enter the model you want to use for prediction: ')
+        predictions = predict(input_text, model_name)
+        pred_dict = {0: 'Angry', 1:'Disappointed', 2:'Happy'}
+        model_pred = pred_dict[int(predictions)]
+
+
+
 
 if __name__ == '__main__':
     main()
